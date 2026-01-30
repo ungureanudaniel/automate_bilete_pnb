@@ -5,7 +5,7 @@ services:
     container_name: bucegi-django
     restart: unless-stopped
     ports:
-      - "8000:8000"
+    - "8081:80"
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
