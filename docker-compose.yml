@@ -17,9 +17,9 @@ services:
       - DJANGO_ENV=production
       - DATABASE_HOST=mysql
       - DATABASE_NAME=automate_bilete
-      - DATABASE_USER=${DB_USER}
-      - DATABASE_PASSWORD=${DB_PASSWORD}
-      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DATABASE_USER=${SQL_USER}
+      - DATABASE_PASSWORD=${SQL_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG:-0}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
     depends_on:
@@ -41,9 +41,9 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_DATABASE=automate_bilete
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_USER=${SQL_USER}
+      - MYSQL_PASSWORD=${SQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
