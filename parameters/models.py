@@ -1,0 +1,60 @@
+from django.db import models
+
+from django.db import models
+
+class Produs(models.Model):
+    denumire = models.CharField(max_length=100)
+    pret = models.DecimalField(max_digits=10, decimal_places=2)
+    valabilitate_zile = models.IntegerField(default=90)
+
+    class Meta:
+        managed = False
+        db_table = 'produse'
+        verbose_name = 'Produs'
+        verbose_name_plural = 'Produse'
+
+class Serie(models.Model):
+    locatie_pos = models.CharField(max_length=100, default='Locatie')
+    serie = models.CharField(max_length=50, default='PNBO')
+    numar = models.IntegerField(default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'serii'
+        verbose_name = 'Serie'
+        verbose_name_plural = 'Serii'
+
+class Tranzactie(models.Model):
+    id_produs = models.IntegerField()
+    cantitate = models.IntegerField()
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    data_tranzactie = models.DateTimeField()
+    pos_id = models.IntegerField()
+    nr = models.BigIntegerField(null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tranzactii'
+        verbose_name = 'Tranzactie'
+        verbose_name_plural = 'Tranzactii'
+
+class UserLegacy(models.Model):
+    nume = models.CharField(max_length=100)
+    parola = models.CharField(max_length=32)
+    tip = models.CharField(max_length=10)
+
+    class Meta:
+        managed = False
+        db_table = 'useri'
+        verbose_name = 'User Legacy'
+        verbose_name_plural = 'Useri Legacy'
+
+class PosPaper(models.Model):
+    pos_id = models.IntegerField(primary_key=True)
+    tickets_at_last_change = models.IntegerField()
+    roll_capacity = models.IntegerField(default=1000)
+    last_change = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'pos_paper'

@@ -1,0 +1,10 @@
+# venv
+venv/
+myvenv/
+.env/
+.env
+# logs
+logs/
+
+.pyc
+__pycache__/
