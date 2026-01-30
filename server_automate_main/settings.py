@@ -80,8 +80,13 @@ DATABASES = {
         'NAME': os.environ.get('SQL_DATABASE', 'automate_bilete'),
         'USER': os.environ.get('SQL_USER', 'automatebilete'),
         'PASSWORD': os.environ.get('SQL_PASSWORD', ''),
-        'HOST': os.environ.get('SQL_HOST', 'localhost'),
+        'HOST': os.environ.get('SQL_HOST', 'host.docker.internal'),
         'PORT': os.environ.get('SQL_PORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'ssl': {'ssl-mode': 'preferred'} if os.getenv('DJANGO_ENV') == 'production' else {},
+        }
     }
 }
 
