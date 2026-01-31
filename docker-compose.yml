@@ -1,11 +1,11 @@
+version: "3.9"
+
 services:
   # Django Application
   django:
     build: .
     container_name: bucegi-django
     restart: unless-stopped
-    ports:
-      - "8000:8000"
     volumes:
       - ./:/app
       - ./staticfiles:/app/staticfiles
@@ -18,10 +18,8 @@ services:
       - DATABASE_USER=${SQL_USER}
       - DATABASE_PASSWORD=${SQL_PASSWORD}
       - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG:-0}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - DEBUG=0
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}   # allow all hosts or specify your IPs/domains
     depends_on:
       mysql:
         condition: service_healthy
@@ -38,22 +36,20 @@ services:
     image: mysql:8.0
     container_name: bucegi-mysql
     restart: unless-stopped
-    command: 
+    command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:
-      - MYSQL_DATABASE=automate_bilete
-      - MYSQL_USER=${SQL_USER}
-      - MYSQL_PASSWORD=${SQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
-      - MYSQL_ALLOW_EMPTY_PASSWORD=no
+      - MYSQL_DATABASE=automate_bilete   # the existing database name
+      - MYSQL_USER=${SQL_USER}           # existing user
+      - MYSQL_PASSWORD=${SQL_PASSWORD}   # existing password
+      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}  # root password if needed
     volumes:
       - mysql_data:/var/lib/mysql
-      # - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./mysql/conf.d:/etc/mysql/conf.d
     ports:
-      - "3307:3306"  # Expose on different port to avoid conflict with existing MySQL
+      - "3306:3306"   # optional; only needed if you want external access to MySQL
     networks:
       - bucegi-network
     healthcheck:
@@ -62,25 +58,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: bucegi-nginx
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-      - "8443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./staticfiles:/static
-      - ./media:/media
-    depends_on:
-      - django
-    networks:
-      - bucegi-network
-
-  # Redis for caching (optional)
+  # Redis for caching
   redis:
     image: redis:7-alpine
     container_name: bucegi-redis
@@ -90,6 +68,30 @@ services:
       - redis_data:/data
     networks:
       - bucegi-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: bucegi-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP
+      - "443:443"  # HTTPS
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./staticfiles:/static:ro
+      - ./media:/media:ro
+      - ./ssl:/etc/nginx/ssl:ro   # if you add SSL certificates later
+    depends_on:
+      - django
+    networks:
+      - bucegi-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
 networks:
   bucegi-network:
     driver: bridge
