@@ -4,6 +4,8 @@ services:
     build: .
     container_name: bucegi-django
     restart: unless-stopped
+    ports:
+      - "8000:8000"   # host 8000 → container 8000
     volumes:
       - ./:/app
       - ./staticfiles:/app/staticfiles
@@ -11,12 +13,12 @@ services:
       - ./logs:/app/logs
     environment:
       - DJANGO_ENV=production
-      - DATABASE_HOST=mysql
-      - DATABASE_NAME=automate_bilete
+      - DATABASE_HOST=${SQL_HOST}
+      - DATABASE_NAME=${SQL_DATABASE}
       - DATABASE_USER=${SQL_USER}
       - DATABASE_PASSWORD=${SQL_PASSWORD}
       - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=0
+      - DEBUG=${DEBUG:-False}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}   # allow all hosts or specify your IPs/domains
     depends_on:
       mysql:
@@ -39,22 +41,24 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:
-      - MYSQL_DATABASE=automate_bilete   # the existing database name
-      - MYSQL_USER=${SQL_USER}           # existing user
-      - MYSQL_PASSWORD=${SQL_PASSWORD}   # existing password
-      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}  # root password if needed
+      - MYSQL_DATABASE=${SQL_DATABASE}
+      - MYSQL_USER=${SQL_USER}
+      - MYSQL_PASSWORD=${SQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_ROOT_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=no
+    ports:
+      - "3307:3306"   # host 3306 → container 3306
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/conf.d:/etc/mysql/conf.d
-    ports:
-      - "3306:3306"   # optional; only needed if you want external access to MySQL
     networks:
       - bucegi-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${SQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
 
   # Redis for caching
   redis:
