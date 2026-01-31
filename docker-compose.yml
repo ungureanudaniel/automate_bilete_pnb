@@ -2,6 +2,8 @@ services:
   # Django Application
   django:
     build: .
+    env_file:
+      - .env
     container_name: bucegi-django
     restart: unless-stopped
     ports:
