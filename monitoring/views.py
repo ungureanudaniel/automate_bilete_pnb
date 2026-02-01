@@ -1,4 +1,3 @@
-from turtle import color
 from django.shortcuts import render
 from parameters.models import PosPaper, Tranzactie, Produs, Serie
 from django.db.models import Sum, Count
