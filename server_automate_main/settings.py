@@ -21,7 +21,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 ALLOWED_HOSTS = []
 if os.getenv('ALLOWED_HOSTS'):
-    ALLOWED_HOSTS.extend(os.getenv('ALLOWED_HOSTS').split(' '))
+    # Split by comma (common) or space
+    hosts = os.getenv('ALLOWED_HOSTS', '').replace(' ', ',').split(',')
+    ALLOWED_HOSTS.extend([h.strip() for h in hosts if h.strip()])
 
 
 # Application definition
