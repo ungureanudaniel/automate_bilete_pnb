@@ -19,12 +19,18 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
-ALLOWED_HOSTS = []
-if os.getenv('ALLOWED_HOSTS'):
-    # Split by comma (common) or space
-    hosts = os.getenv('ALLOWED_HOSTS', '').replace(' ', ',').split(',')
-    ALLOWED_HOSTS.extend([h.strip() for h in hosts if h.strip()])
-
+# ALLOWED_HOSTS = []
+# if os.getenv('ALLOWED_HOSTS'):
+#     # Split by comma (common) or space
+#     hosts = os.getenv('ALLOWED_HOSTS', '').replace(' ', ',').split(',')
+#     ALLOWED_HOSTS.extend([h.strip() for h in hosts if h.strip()])
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1', 
+    '86.122.72.126',
+    '0.0.0.0',
+    'django',  # Container name
+]
 
 # Application definition
 
