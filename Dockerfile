@@ -42,4 +42,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 
 # Run application
 #CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "server_automate_main.wsgi:application"]
-CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=bucegi_admin.settings && python manage.py migrate && gunicorn --bind 0.0.0.0:8000 bucegi_admin.wsgi:application"]
+CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=bucegi_admin.settings && python manage.py migrate && gunicorn --bind 0.0.0.0:8000 server_automate_main.wsgi:application"]
