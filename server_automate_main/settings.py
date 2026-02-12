@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     '86.122.72.126',
     '0.0.0.0',
-    'django',  # Container name
+    'django',
 ]
 
 # Application definition
@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'monitoring',
     'parameters',
+    'api',
+    'rest_framework',
     
 ]
 INTERNAL_IPS = [

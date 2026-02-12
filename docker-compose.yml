@@ -6,8 +6,9 @@ services:
       - .env
     container_name: bucegi-django
     restart: unless-stopped
-    ports:
-      - "8000:8000"   # host 8000 → container 8000
+    network_mode: host
+    # ports:
+      # - "8000:8000"   # host 8000 → container 8000
     volumes:
       - ./:/app
       - ./staticfiles:/app/staticfiles
@@ -23,8 +24,8 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG:-False}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}   # allow all hosts or specify your IPs/domains
-    networks:
-      - bucegi-network
+    # networks:
+    #   - bucegi-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 30s
