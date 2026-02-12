@@ -1,12 +1,24 @@
+from django.http import JsonResponse
 from django.shortcuts import render
-from parameters.models import PosPaper, Tranzactie, Produs, Serie
+from parameters.models import PosPaper, TicketMachine, Tranzactie, Produs
 from django.db.models import Sum, Count
 from django.utils import timezone
 import json
 from datetime import timedelta
+from server_automate_main.monitoring.utils import ping_all_machines
 
 def dashboard(request):
     last_24h = timezone.now() - timedelta(hours=24)
+
+    # machines status
+    machines = TicketMachine.objects.all()
+
+    context = {
+        'machines': machines.order_by('-is_online','pos_id'),
+        'total_machines': machines.count(),
+        'online_machines': machines.filter(is_online=True).count(),
+        'offline': machines.filter(is_online=False).count(),
+    }
 
     # tickets per POS in last 24h
     stats = (
@@ -90,3 +102,13 @@ def dashboard(request):
         'paper_colors_json': json.dumps(paper_colors),
     }
     return render(request, 'core/dashboard.html', context)
+
+def ping_now(request):
+    """Trigger ping manually"""
+    result = ping_all_machines()
+    return JsonResponse({'status': 'ok', 'message': result})
+
+def machine_status_api(request):
+    """API endpoint pentru status"""
+    machines = TicketMachine.objects.all().values('pos_id', 'ip_address', 'is_online', 'last_online')
+    return JsonResponse(list(machines), safe=False)

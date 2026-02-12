@@ -2,6 +2,25 @@ from django.db import models
 
 from django.db import models
 
+class TicketMachine(models.Model):
+    pos_id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    ip_address = models.GenericIPAddressField()
+    last_online = models.DateTimeField(null=True, blank=True)
+    last_offline = models.DateTimeField(null=True, blank=True)
+    is_online = models.BooleanField(default=False)
+    failure_count = models.IntegerField(default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'ticket_machines'
+        verbose_name = 'Ticket Machine'
+        verbose_name_plural = 'Ticket Machines'
+    
+    def __str__(self):
+        return f"POS {self.pos_id} - {self.ip_address} - {'ONLINE' if self.is_online else 'OFFLINE'}"
+
+
 class Produs(models.Model):
     denumire = models.CharField(max_length=100)
     pret = models.DecimalField(max_digits=10, decimal_places=2)

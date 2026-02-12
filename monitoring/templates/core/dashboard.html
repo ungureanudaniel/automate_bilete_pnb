@@ -4,6 +4,38 @@
     <title>Automate Bilete Dashboard</title>
 </head>
 <body>
+    <h1>📡 POS Heartbeat Monitor</h1>
+    
+    <div class="stats">
+        <span>Total: {{ total }}</span> | 
+        <span class="online">✅ Online: {{ online }}</span> | 
+        <span class="offline">❌ Offline: {{ offline }}</span>
+    </div>
+    
+    <a href="#" onclick="pingNow()" class="btn">🔄 Ping Now</a>
+    
+    <table>
+        <tr>
+            <th>POS ID</th>
+            <th>IP Address</th>
+            <th>Status</th>
+            <th>Last Online</th>
+            <th>Actions</th>
+        </tr>
+        {% for m in machines %}
+        <tr>
+            <td>{{ m.pos_id }}</td>
+            <td>{{ m.ip_address }}</td>
+            <td class="{% if m.is_online %}online{% else %}offline{% endif %}">
+                {% if m.is_online %}✅ ONLINE{% else %}❌ OFFLINE{% endif %}
+            </td>
+            <td>{{ m.last_online|timesince }} ago</td>
+            <td>
+                <button onclick="pingMachine({{ m.pos_id }})">Ping</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
     <h1>Dashboard (Last 24h)</h1>
     <table border="1">
         <tr>
@@ -14,6 +46,7 @@
         </tr>
         {% for s in stats %}
         <tr>
+            <td>{{ s.pos_id }}</td>
             <td>{{ s.pos_id }}</td>
             <td>{{ s.total_bilete }}</td>
             <td>{{ s.total_suma }}</td>
@@ -31,6 +64,21 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+        function pingNow() {
+            fetch('/monitoring/ping-now/')
+                .then(response => response.json())
+                .then(data => {
+                    alert('Ping completed: ' + data.message);
+                    location.reload();
+                });
+        }
+        
+        function pingMachine(posId) {
+            fetch(`/monitoring/ping-machine/${posId}/`)
+                .then(() => location.reload());
+        }
+    </script>
 <script>
 const posLabels = {{ pos_labels_json|safe }};
 const posTickets = {{ pos_tickets_json|safe }};
