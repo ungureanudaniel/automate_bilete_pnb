@@ -1,8 +1,8 @@
 asgiref==3.11.0
-Django>=5
+Django==6.0.1
+djangorestframework==3.16.1
 mysqlclient==2.2.7
 numpy==2.4.1
-gunicorn>=20.1.0
 pandas==3.0.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
