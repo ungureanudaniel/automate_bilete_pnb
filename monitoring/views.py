@@ -5,7 +5,7 @@ from django.db.models import Sum, Count
 from django.utils import timezone
 import json
 from datetime import timedelta
-from server_automate_main.monitoring.utils import ping_all_machines
+from monitoring.utils import ping_all_machines
 
 def dashboard(request):
     last_24h = timezone.now() - timedelta(hours=24)
