@@ -47,7 +47,6 @@
         {% for s in stats %}
         <tr>
             <td>{{ s.pos_id }}</td>
-            <td>{{ s.pos_id }}</td>
             <td>{{ s.total_bilete }}</td>
             <td>{{ s.total_suma }}</td>
             <td>{{ s.tranzactii }}</td>
@@ -78,7 +77,7 @@
             fetch(`/monitoring/ping-machine/${posId}/`)
                 .then(() => location.reload());
         }
-    </script>
+</script>
 <script>
 const posLabels = {{ pos_labels_json|safe }};
 const posTickets = {{ pos_tickets_json|safe }};
