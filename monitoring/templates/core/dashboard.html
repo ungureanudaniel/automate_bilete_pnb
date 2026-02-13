@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Automate Bilete Dashboard</title>
+    <title>Dashboard Automate Bilete</title>
 </head>
 <body>
-    <h1>📡 POS Heartbeat Monitor</h1>
+    <h1>📡 Monitorizare Stare Aparate</h1>
     
     <div class="stats">
         <span>Total: {{ total }}</span> | 
@@ -12,15 +12,15 @@
         <span class="offline">❌ Offline: {{ offline }}</span>
     </div>
     
-    <a href="#" onclick="pingNow()" class="btn">🔄 Ping Now</a>
+    <a href="#" onclick="pingNow()" class="btn">🔄 Ping </a>
     
     <table>
         <tr>
             <th>POS ID</th>
-            <th>IP Address</th>
+            <th>Adresă IP</th>
             <th>Status</th>
-            <th>Last Online</th>
-            <th>Actions</th>
+            <th>Ultima dată online</th>
+            <th>Acțiuni</th>
         </tr>
         {% for m in machines %}
         <tr>
@@ -29,20 +29,20 @@
             <td class="{% if m.is_online %}online{% else %}offline{% endif %}">
                 {% if m.is_online %}✅ ONLINE{% else %}❌ OFFLINE{% endif %}
             </td>
-            <td>{{ m.last_online|timesince }} ago</td>
+            <td>{{ m.last_online|timesince }} în urmă</td>
             <td>
                 <button onclick="pingMachine({{ m.pos_id }})">Ping</button>
             </td>
         </tr>
         {% endfor %}
     </table>
-    <h1>Dashboard (Last 24h)</h1>
+    <h1>Dashboard (Ultimele 24 ore)</h1>
     <table border="1">
         <tr>
             <th>POS ID</th>
-            <th>Total Tickets</th>
-            <th>Total Amount</th>
-            <th>Transactions</th>
+            <th>Total Tichete</th>
+            <th>Total Sumă</th>
+            <th>Transacții</th>
         </tr>
         {% for s in stats %}
         <tr>
@@ -52,7 +52,7 @@
             <td>{{ s.tranzactii }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="4">No transactions in last 24h</td></tr>
+        <tr><td colspan="4">Nici o tranzacție în ultimele 24 ore</td></tr>
         {% endfor %}
     </table>
 
@@ -93,7 +93,7 @@ new Chart(document.getElementById('ticketsPerPOS').getContext('2d'), {
     data: {
         labels: posLabels,
         datasets: [{
-            label: 'Tickets Sold',
+            label: 'Tichete Vândute',
             data: posTickets,
             backgroundColor: 'rgba(54, 162, 235, 0.6)'
         }]
@@ -112,7 +112,7 @@ new Chart(document.getElementById('ticketsByProduct').getContext('2d'), {
     data: {
         labels: productLabels,
         datasets: [{
-            label: 'Tickets Sold',
+            label: 'Tichete Vândute',
             data: productValues,
             backgroundColor: [
                 'rgba(255, 99, 132, 0.6)',
@@ -136,7 +136,7 @@ new Chart(document.getElementById('paperChart').getContext('2d'), {
     data: {
         labels: paperLabels,
         datasets: [{
-            label: 'Paper Remaining (%)',
+            label: 'Hârtie rămasă (%)',
             data: paperRemaining,
             backgroundColor: paperColors
         }]
@@ -149,7 +149,7 @@ new Chart(document.getElementById('paperChart').getContext('2d'), {
             x: {
                 min: 0,
                 max: 100,
-                title: { display: true, text: 'Percentage Remaining' }
+                title: { display: true, text: 'Procent rămas' }
             }
         },
         plugins: {
