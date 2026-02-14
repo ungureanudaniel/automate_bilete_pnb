@@ -43,9 +43,9 @@
             <h3>{{ year }} Year-to-Date Summary</h3>
         </div>
         <div class="card-body">
-            <p>Total Tickets: {{ year_stats.total_bilete_year|default:0 }}</p>
-            <p>Total Revenue: {{ year_stats.total_suma_year|default:0 }} RON</p>
-            <p>Total Transactions: {{ year_stats.total_tranzactii_year|default:0 }}</p>
+            <p>Total Tichete: {{ year_stats.total_bilete_year|default:0 }}</p>
+            <p>Total Venituri: {{ year_stats.total_suma_year|default:0 }} RON</p>
+            <p>Total Tranzactii: {{ year_stats.total_tranzactii_year|default:0 }}</p>
         </div>
     </div>
 
@@ -55,36 +55,21 @@
             <h3>{{ month }} {{ year }} Summary</h3>
         </div>
         <div class="card-body">
-            <p>Total Tickets: {{ month_stats.total_bilete_month|default:0 }}</p>
-            <p>Total Revenue: {{ month_stats.total_suma_month|default:0 }} RON</p>
-            <p>Total Transactions: {{ month_stats.total_tranzactii_month|default:0 }}</p>
+            <p>Total Tichete: {{ month_stats.total_bilete_month|default:0 }}</p>
+            <p>Total Venituri: {{ month_stats.total_suma_month|default:0 }} RON</p>
+            <p>Total Tranzactii: {{ month_stats.total_tranzactii_month|default:0 }}</p>
         </div>
     </div>
-    <table border="1">
-        <tr>
-            <th>POS ID</th>
-            <th>Total Tichete</th>
-            <th>Total Sumă</th>
-            <th>Transacții</th>
-        </tr>
-        {% for s in stats %}
-        <tr>
-            <td>{{ s.pos_id }}</td>
-            <td>{{ s.total_bilete }}</td>
-            <td>{{ s.total_suma }}</td>
-            <td>{{ s.tranzactii }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4">Nici o tranzacție în ultimele 12 luni</td></tr>
-        {% endfor %}
-    </table>
-
-<div style="display: flex; margin-top:100px; height:400px; width:auto; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
-    <canvas id="ticketsPerPOS" width="400" height="200"></canvas>
-    <canvas id="ticketsByProduct" width="300" height="300"></canvas>
-    <canvas id="paperChart" width="400" height="200"></canvas>
-</div>
-
+    <div style="display: flex; margin-top:100px; height:400px; width:auto; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+        <canvas id="yearlyPosChart" width="400" height="200"></canvas>
+        <canvas id="ticketsByProduct" width="300" height="300"></canvas>
+        <canvas id="paperChart" width="400" height="200"></canvas>
+    </div>
+    <div style="display: flex; margin-top:100px; height:400px; width:auto; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+        <canvas id="monthlyPosChart" width="400" height="200"></canvas>
+        <canvas id="ticketsByProduct" width="300" height="300"></canvas>
+        <canvas id="paperChart" width="400" height="200"></canvas>
+    </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
         function pingNow() {
