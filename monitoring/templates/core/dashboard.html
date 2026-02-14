@@ -37,6 +37,29 @@
         {% endfor %}
     </table>
     <h1>Dashboard (Ultimele 12 luni)</h1>
+    <!-- Yearly Summary Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ year }} Year-to-Date Summary</h3>
+        </div>
+        <div class="card-body">
+            <p>Total Tickets: {{ year_stats.total_bilete_year|default:0 }}</p>
+            <p>Total Revenue: {{ year_stats.total_suma_year|default:0 }} RON</p>
+            <p>Total Transactions: {{ year_stats.total_tranzactii_year|default:0 }}</p>
+        </div>
+    </div>
+
+    <!-- Monthly Summary Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ month }} {{ year }} Summary</h3>
+        </div>
+        <div class="card-body">
+            <p>Total Tickets: {{ month_stats.total_bilete_month|default:0 }}</p>
+            <p>Total Revenue: {{ month_stats.total_suma_month|default:0 }} RON</p>
+            <p>Total Transactions: {{ month_stats.total_tranzactii_month|default:0 }}</p>
+        </div>
+    </div>
     <table border="1">
         <tr>
             <th>POS ID</th>
@@ -78,58 +101,90 @@
                 .then(() => location.reload());
         }
 </script>
+<!-- <script> -->
+// const posLabels = {{ pos_labels12_json|safe }};
+// const posTickets = {{ pos_tickets12_json|safe }};
+// const productLabels = {{ product_labels_json|safe }};
+// const productValues = {{ product_values_json|safe }};
+// const paperLabels = {{ paper_labels_json|safe }};
+// const paperRemaining = {{ paper_remaining_json|safe }};
+// const paperColors = {{ paper_colors_json|safe }};
+
+// // --- Tickets per POS ---
+// new Chart(document.getElementById('ticketsPerPOS').getContext('2d'), {
+//     type: 'bar',
+//     data: {
+//         labels: posLabels,
+//         datasets: [{
+//             label: 'Tichete Vândute',
+//             data: posTickets,
+//             backgroundColor: 'rgba(54, 162, 235, 0.6)'
+//         }]
+//     },
+//     options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//         scales: { y: { beginAtZero: true } },
+//         plugins: { legend: { display: true } }
+//     }
+// });
+
+// // --- Tickets by Product ---
+// new Chart(document.getElementById('ticketsByProduct').getContext('2d'), {
+//     type: 'pie',
+//     data: {
+//         labels: productLabels,
+//         datasets: [{
+//             label: 'Tichete Vândute',
+//             data: productValues,
+//             backgroundColor: [
+//                 'rgba(255, 99, 132, 0.6)',
+//                 'rgba(54, 162, 235, 0.6)',
+//                 'rgba(255, 206, 86, 0.6)',
+//                 'rgba(75, 192, 192, 0.6)',
+//                 'rgba(153, 102, 255, 0.6)'
+//             ]
+//         }]
+//     },
+//     options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//         plugins: { legend: { display: true } }
+//     }
+// });
+<canvas id="yearlyPosChart"></canvas>
 <script>
-const posLabels = {{ pos_labels12_json|safe }};
-const posTickets = {{ pos_tickets12_json|safe }};
-const productLabels = {{ product_labels_json|safe }};
-const productValues = {{ product_values_json|safe }};
-const paperLabels = {{ paper_labels_json|safe }};
-const paperRemaining = {{ paper_remaining_json|safe }};
-const paperColors = {{ paper_colors_json|safe }};
+    var ctx = document.getElementById('yearlyPosChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ year_pos_labels_json|safe }},
+            datasets: [{
+                label: 'Tickets per POS ({{ year }})',
+                data: {{ year_pos_tickets_json|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            }]
+        }
+    });
+</script>
 
-// --- Tickets per POS ---
-new Chart(document.getElementById('ticketsPerPOS').getContext('2d'), {
-    type: 'bar',
-    data: {
-        labels: posLabels,
-        datasets: [{
-            label: 'Tichete Vândute',
-            data: posTickets,
-            backgroundColor: 'rgba(54, 162, 235, 0.6)'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { display: true } }
-    }
-});
-
-// --- Tickets by Product ---
-new Chart(document.getElementById('ticketsByProduct').getContext('2d'), {
-    type: 'pie',
-    data: {
-        labels: productLabels,
-        datasets: [{
-            label: 'Tichete Vândute',
-            data: productValues,
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)'
-            ]
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: true } }
-    }
-});
-
+<!-- Monthly POS Chart -->
+<canvas id="monthlyPosChart"></canvas>
+<script>
+    var ctx = document.getElementById('monthlyPosChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ month_pos_labels_json|safe }},
+            datasets: [{
+                label: 'Tickets per POS ({{ month }} {{ year }})',
+                data: {{ month_pos_tickets_json|safe }},
+                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+            }]
+        }
+    });
+</script>
+<script>
 // --- Paper Remaining ---
 new Chart(document.getElementById('paperChart').getContext('2d'), {
     type: 'bar',
