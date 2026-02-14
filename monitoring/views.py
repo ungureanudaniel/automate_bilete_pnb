@@ -15,9 +15,9 @@ def dashboard(request):
     machines = TicketMachine.objects.all()
 
     # tickets per POS in last 24h
-    stats = (
+    last_12 = (
         Tranzactie.objects
-        .filter(data_tranzactie__gte=last_30d)
+        .filter(data_tranzactie__gte=last_12m)
         .values('pos_id')
         .annotate(
             total_bilete=Sum('cantitate'),
@@ -27,16 +27,16 @@ def dashboard(request):
         .order_by('pos_id')
     )
     # POS stats
-    pos_labels = [s['pos_id'] for s in stats]
-    pos_tickets = [s['total_bilete'] for s in stats]
+    pos_labels12 = [s['pos_id'] for s in last_12]
+    pos_tickets12 = [s['total_bilete'] for s in last_12]
 
-    print("POS Labels:", pos_labels)
-    print("POS Tickets:", pos_tickets)
+    print("POS Labels:", pos_labels12)
+    print("POS Tickets:", pos_tickets12)
 
     # top 10 sold
     products = (
         Tranzactie.objects
-        .filter(data_tranzactie__gte=last_24h)
+        .filter(data_tranzactie__gte=last_12m)
         .values('id_produs', total_bilete=Sum('cantitate'))
         .annotate(sold_count=Sum('cantitate'))
         .order_by('-sold_count')
@@ -86,9 +86,9 @@ def dashboard(request):
         paper_remaining.append(max(remaining_percent, 0))
         paper_colors.append(color)
     context = {
-        'stats': stats,
-        'pos_labels_json': json.dumps(pos_labels),
-        'pos_tickets_json': json.dumps(pos_tickets),
+        'last_12': last_12,
+        'pos_labels12_json': json.dumps(pos_labels12),
+        'pos_tickets12_json': json.dumps(pos_tickets12),
         'product_labels_json': json.dumps(product_labels),
         'product_values_json': json.dumps(product_values),
         'paper_labels_json': json.dumps(paper_labels),
