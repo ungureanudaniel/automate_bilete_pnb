@@ -1,4 +1,4 @@
-from calendar import calendar
+from calendar import monthrange
 from django.http import JsonResponse
 from django.shortcuts import render
 from parameters.models import PosPaper, TicketMachine, Tranzactie, Produs
@@ -20,7 +20,7 @@ def dashboard(request):
     
     # Current month filter
     month_start = timezone.make_aware(datetime(current_year, current_month, 1))
-    last_day = calendar.monthrange(current_year, current_month)[1]
+    last_day = monthrange(current_year, current_month)[1]
     month_end = timezone.make_aware(datetime(current_year, current_month, last_day, 23, 59, 59))
     
     # Last 30 days, 12 months, 24 hours filters
