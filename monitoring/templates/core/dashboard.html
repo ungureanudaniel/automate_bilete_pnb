@@ -6,36 +6,54 @@
 <body>
     <h1>📡 Monitorizare Stare Aparate</h1>
     
-    <div class="stats">
-        <span>Total: {{ total }}</span> | 
-        <span class="online">✅ Online: {{ online }}</span> | 
-        <span class="offline">❌ Offline: {{ offline }}</span>
-    </div>
-    
-    <a href="#" onclick="pingNow()" class="btn">🔄 Ping </a>
-    
-    <table>
-        <tr>
-            <th>POS ID</th>
-            <th>Adresă IP</th>
-            <th>Status</th>
-            <th>Ultima dată online</th>
-            <th>Acțiuni</th>
-        </tr>
-        {% for m in machines %}
-        <tr>
-            <td>{{ m.pos_id }}</td>
-            <td>{{ m.ip_address }}</td>
-            <td class="{% if m.is_online %}online{% else %}offline{% endif %}">
-                {% if m.is_online %}✅ ONLINE{% else %}❌ OFFLINE{% endif %}
-            </td>
-            <td>{{ m.last_online|timesince }} în urmă</td>
-            <td>
-                <button onclick="pingMachine({{ m.pos_id }})">Ping</button>
-            </td>
-        </tr>
+    <!-- Machine status cards -->
+    <div class="row">
+        {% for machine in machines %}
+        <div class="col-md-3 mb-3">
+            <div class="card {% if machine.is_online %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">POS {{ machine.pos_id }}</h5>
+                    <p class="card-text">
+                        Status: 
+                        {% if machine.is_online %}
+                            <span class="badge bg-success">Online</span>
+                        {% else %}
+                            <span class="badge bg-danger">Offline</span>
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <small>Last seen: {{ machine.last_seen|default:"Never" }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-    </table>
+    </div>
+
+    <!-- Summary -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h3>Online: {{ online_machines }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h3>Offline: {{ offline }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h3>Total: {{ total_machines }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
     <h1>Dashboard (Ultimele 12 luni)</h1>
     <!-- Yearly Summary Card -->
     <div class="card">
@@ -60,16 +78,14 @@
             <p>Total Tranzactii: {{ month_stats.total_tranzactii_month|default:0 }}</p>
         </div>
     </div>
-    <div style="display: flex; margin-top:100px; height:400px; width:auto; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
-        <canvas id="yearlyPosChart" width="400" height="200"></canvas>
-        <canvas id="ticketsByProduct" width="300" height="300"></canvas>
-        <canvas id="paperChart" width="400" height="200"></canvas>
+   <div class="row">
+    <div class="col-md-6">
+        <canvas id="ticketsChart"></canvas>
     </div>
-    <div style="display: flex; margin-top:100px; height:400px; width:auto; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
-        <canvas id="monthlyPosChart" width="400" height="200"></canvas>
-        <canvas id="ticketsByProduct" width="300" height="300"></canvas>
-        <canvas id="paperChart" width="400" height="200"></canvas>
+    <div class="col-md-6">
+        <canvas id="revenueChart"></canvas>
     </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
         function pingNow() {
@@ -86,152 +102,6 @@
                 .then(() => location.reload());
         }
 </script>
-<!-- <script> -->
-// const posLabels = {{ pos_labels12_json|safe }};
-// const posTickets = {{ pos_tickets12_json|safe }};
-// const productLabels = {{ product_labels_json|safe }};
-// const productValues = {{ product_values_json|safe }};
-// const paperLabels = {{ paper_labels_json|safe }};
-// const paperRemaining = {{ paper_remaining_json|safe }};
-// const paperColors = {{ paper_colors_json|safe }};
-
-// // --- Tickets per POS ---
-// new Chart(document.getElementById('ticketsPerPOS').getContext('2d'), {
-//     type: 'bar',
-//     data: {
-//         labels: posLabels,
-//         datasets: [{
-//             label: 'Tichete Vândute',
-//             data: posTickets,
-//             backgroundColor: 'rgba(54, 162, 235, 0.6)'
-//         }]
-//     },
-//     options: {
-//         responsive: true,
-//         maintainAspectRatio: false,
-//         scales: { y: { beginAtZero: true } },
-//         plugins: { legend: { display: true } }
-//     }
-// });
-
-// // --- Tickets by Product ---
-// new Chart(document.getElementById('ticketsByProduct').getContext('2d'), {
-//     type: 'pie',
-//     data: {
-//         labels: productLabels,
-//         datasets: [{
-//             label: 'Tichete Vândute',
-//             data: productValues,
-//             backgroundColor: [
-//                 'rgba(255, 99, 132, 0.6)',
-//                 'rgba(54, 162, 235, 0.6)',
-//                 'rgba(255, 206, 86, 0.6)',
-//                 'rgba(75, 192, 192, 0.6)',
-//                 'rgba(153, 102, 255, 0.6)'
-//             ]
-//         }]
-//     },
-//     options: {
-//         responsive: true,
-//         maintainAspectRatio: false,
-//         plugins: { legend: { display: true } }
-//     }
-// });
-<canvas id="yearlyPosChart"></canvas>
-<script>
-    var ctx = document.getElementById('yearlyPosChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ year_pos_labels_json|safe }},
-            datasets: [{
-                label: 'Tickets per POS ({{ year }})',
-                data: {{ year_pos_tickets_json|safe }},
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            }]
-        }
-    });
-</script>
-
-<!-- Monthly POS Chart -->
-<canvas id="monthlyPosChart"></canvas>
-<script>
-    var ctx = document.getElementById('monthlyPosChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ month_pos_labels_json|safe }},
-            datasets: [{
-                label: 'Tickets per POS ({{ month }} {{ year }})',
-                data: {{ month_pos_tickets_json|safe }},
-                backgroundColor: 'rgba(255, 159, 64, 0.5)',
-            }]
-        }
-    });
-</script>
-<script>
-// --- Paper Remaining ---
-new Chart(document.getElementById('paperChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-        labels: paperLabels,
-        datasets: [{
-            label: 'Hârtie rămasă (%)',
-            data: paperRemaining,
-            backgroundColor: paperColors
-        }]
-    },
-    options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                min: 0,
-                max: 100,
-                title: { display: true, text: 'Procent rămas hârtie' }
-            }
-        },
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: function(ctx) { return ctx.raw.toFixed(1) + '% remaining'; }
-                }
-            }
-        }
-    }
-});
-</script>
-
-</body>
-<style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    
-    .chart-container {
-        display: flex;
-        flex-wrap: wrap;       /* allow wrapping on smaller screens */
-        justify-content: center;
-        gap: 20px;
-    }
-
-    canvas {
-        background: #f9f9f9;
-        padding: 10px;
-        border-radius: 6px;
-        width: 100% !important;  /* full width of parent container */
-        max-width: 400px;        /* limit width */
-        min-height: 200px;       /* ensure visible height */
-    }
-
-    #ticketsByProduct {
-        max-width: 300px;       /* optional: smaller pie chart */
-        min-height: 250px;
-    }
-
-    @media (max-width: 900px) {
-        canvas { max-width: 90%; } /* shrink charts on narrow screens */
-    }
-</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </html>

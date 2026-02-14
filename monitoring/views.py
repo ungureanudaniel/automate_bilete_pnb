@@ -29,7 +29,14 @@ def dashboard(request):
     last_24h = timezone.now() - timedelta(hours=24)
     # machines status
     machines = TicketMachine.objects.all()
-
+    # Calculate online status
+    online_threshold = timezone.now() - timedelta(minutes=5)
+    online_machines = machines.filter(last_seen__gte=online_threshold)
+    offline_machines = machines.filter(last_seen__lt=online_threshold) | machines.filter(last_seen__isnull=True)
+    
+    # For each machine, add status
+    for machine in machines:
+        machine.is_online = machine.last_seen and machine.last_seen >= online_threshold
     # ========== CURRENT YEAR STATS ==========
     year_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[year_start, year_end]
@@ -192,3 +199,37 @@ def machine_status_api(request):
     """API endpoint pentru status"""
     machines = TicketMachine.objects.all().values('pos_id', 'ip_address', 'is_online', 'last_online')
     return JsonResponse(list(machines), safe=False)
+
+def chart_data(request):
+    """API endpoint for chart data"""
+    
+    # Get time period (default: last 30 days)
+    days = int(request.GET.get('days', 30))
+    start_date = timezone.now() - timedelta(days=days)
+    
+    # Get data per POS
+    pos_data = Tranzactie.objects.filter(
+        data_tranzactie__gte=start_date
+    ).values('pos_id').annotate(
+        total_tickets=Sum('cantitate'),
+        total_revenue=Sum('total'),
+        transaction_count=Count('id')
+    ).order_by('pos_id')
+    
+    # Get data over time (for line charts)
+    daily_data = Tranzactie.objects.filter(
+        data_tranzactie__gte=start_date
+    ).extra(
+        select={'day': 'DATE(data_tranzactie)'}
+    ).values('day').annotate(
+        tickets=Sum('cantitate'),
+        revenue=Sum('total')
+    ).order_by('day')
+    
+    return JsonResponse({
+        'pos_data': list(pos_data),
+        'daily_data': list(daily_data),
+        'labels': [f"POS {d['pos_id']}" for d in pos_data],
+        'tickets': [d['total_tickets'] for d in pos_data],
+        'revenue': [float(d['total_revenue']) for d in pos_data],
+    })

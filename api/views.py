@@ -35,4 +35,4 @@ def heartbeat(request):
     machine = check_token(request)
     if not machine:
         return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-    return Response({'status': 'alive'})
+    return Response({'status': 'alive', 'last_seen': machine.last_seen})
