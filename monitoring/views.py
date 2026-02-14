@@ -8,22 +8,16 @@ from datetime import timedelta
 from monitoring.utils import ping_all_machines
 
 def dashboard(request):
+    last_30d = timezone.now() - timedelta(days=30)
+    last_12m = timezone.now() - timedelta(days=365)
     last_24h = timezone.now() - timedelta(hours=24)
-
     # machines status
     machines = TicketMachine.objects.all()
-
-    context = {
-        'machines': machines.order_by('-is_online','pos_id'),
-        'total_machines': machines.count(),
-        'online_machines': machines.filter(is_online=True).count(),
-        'offline': machines.filter(is_online=False).count(),
-    }
 
     # tickets per POS in last 24h
     stats = (
         Tranzactie.objects
-        .filter(data_tranzactie__gte=last_24h)
+        .filter(data_tranzactie__gte=last_30d)
         .values('pos_id')
         .annotate(
             total_bilete=Sum('cantitate'),
@@ -100,6 +94,10 @@ def dashboard(request):
         'paper_labels_json': json.dumps(paper_labels),
         'paper_remaining_json': json.dumps(paper_remaining),
         'paper_colors_json': json.dumps(paper_colors),
+        'machines': machines.order_by('-is_online','pos_id'),
+        'total_machines': machines.count(),
+        'online_machines': machines.filter(is_online=True).count(),
+        'offline': machines.filter(is_online=False).count(),
     }
     return render(request, 'core/dashboard.html', context)
 
