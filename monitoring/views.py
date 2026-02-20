@@ -101,10 +101,7 @@ def dashboard(request):
         .annotate(sold_count=Sum('cantitate'))
         .order_by('-sold_count')
     )
-    
-    # ========== MACHINE STATUS (unchanged) ==========
-    machines = PosMachine.objects.all()
-    
+        
     # ========== PAPER USAGE (unchanged) ==========
     paper_labels = []
     paper_remaining = []

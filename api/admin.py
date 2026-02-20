@@ -1,5 +1,5 @@
 from django.contrib import admin
-from server_automate_main.api.models import PosMachine
+from .models import PosMachine
 
 # Register your models here.
 @admin.register(PosMachine)
