@@ -1,7 +1,5 @@
 from django.db import models
 
-from django.db import models
-
 class TicketMachine(models.Model):
     pos_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -75,5 +73,5 @@ class PosPaper(models.Model):
     last_change = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'pos_paper'

@@ -1,7 +1,8 @@
 from calendar import monthrange
 from django.http import JsonResponse
 from django.shortcuts import render
-from parameters.models import PosPaper, TicketMachine, Tranzactie, Produs
+from parameters.models import PosPaper, Tranzactie, Produs
+from api.models import PosMachine
 from django.db.models import Sum, Count
 from django.utils import timezone
 import json
@@ -28,15 +29,17 @@ def dashboard(request):
     last_12m = timezone.now() - timedelta(days=365)
     last_24h = timezone.now() - timedelta(hours=24)
     # machines status
-    machines = TicketMachine.objects.all()
+    machines = PosMachine.objects.all()
     # Calculate online status
     online_threshold = timezone.now() - timedelta(minutes=5)
-    online_machines = machines.filter(last_online__gte=online_threshold)
-    offline_machines = machines.filter(last_online__lt=online_threshold) | machines.filter(last_online__isnull=True)
-    
-    # For each machine, add status
+    # Calculate online/offline counts in Python
+    online_count = 0
+    offline_count = 0
     for machine in machines:
-        machine.is_online = machine.last_online and machine.last_online >= online_threshold
+        if machine.is_online:  # This calls your property/method
+            online_count += 1
+        else:
+            offline_count += 1
     # ========== CURRENT YEAR STATS ==========
     year_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[year_start, year_end]
@@ -100,7 +103,7 @@ def dashboard(request):
     )
     
     # ========== MACHINE STATUS (unchanged) ==========
-    machines = TicketMachine.objects.all()
+    machines = PosMachine.objects.all()
     
     # ========== PAPER USAGE (unchanged) ==========
     paper_labels = []
@@ -176,10 +179,10 @@ def dashboard(request):
         'month_product_values_json': json.dumps(month_product_values),
         
         # Machine status
-        'machines': machines.order_by('-is_online', 'pos_id'),
+        'machines': machines.order_by('pos_id'),
         'total_machines': machines.count(),
-        'online_machines': machines.filter(is_online=True).count(),
-        'offline': machines.filter(is_online=False).count(),
+        'online_machines': online_count,
+        'offline': offline_count,
         
         # Paper data
         'paper_labels_json': json.dumps(paper_labels),
@@ -197,7 +200,7 @@ def ping_now(request):
 
 def machine_status_api(request):
     """API endpoint pentru status"""
-    machines = TicketMachine.objects.all().values('pos_id', 'ip_address', 'is_online', 'last_online')
+    machines = PosMachine.objects.all().values('pos_id', 'ip_address', 'is_online', 'last_online')
     return JsonResponse(list(machines), safe=False)
 
 def chart_data(request):

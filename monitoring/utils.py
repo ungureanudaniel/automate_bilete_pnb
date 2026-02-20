@@ -1,6 +1,6 @@
 from pythonping import ping
 from django.utils import timezone
-from parameters.models import TicketMachine
+from api.models import PosMachine
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
@@ -28,7 +28,7 @@ def check_machine_status(machine):
 
 def ping_all_machines():
     """Ping all machines in parallel"""
-    machines = TicketMachine.objects.all()
+    machines = PosMachine.objects.all()
     
     # Ping in paralel - mai rapid
     with ThreadPoolExecutor(max_workers=10) as executor:
