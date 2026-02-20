@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard Automate Bilete</title>
+    <title>Dashboard Automatizare Bilete</title>
 </head>
 <body>
     <h1>📡 Monitorizare Stare Aparate</h1>
@@ -22,7 +22,7 @@
                         {% endif %}
                     </p>
                     <p class="card-text">
-                        <small>Last seen: {{ machine.last_online|default:"Never" }}</small>
+                        <small>Ultima activitate: {{ machine.last_online|default:"Niciodată" }}</small>
                     </p>
                 </div>
             </div>
@@ -54,30 +54,33 @@
             </div>
         </div>
     </div>
+
     <h1>Dashboard (Ultimele 12 luni)</h1>
+
     <!-- Yearly Summary Card -->
     <div class="card">
         <div class="card-header">
-            <h3>{{ year }} Year-to-Date Summary</h3>
+            <h3>Sumar Anual {{ year }}</h3>
         </div>
         <div class="card-body">
             <p>Total Tichete: {{ year_stats.total_bilete_year|default:0 }}</p>
             <p>Total Venituri: {{ year_stats.total_suma_year|default:0 }} RON</p>
-            <p>Total Tranzactii: {{ year_stats.total_tranzactii_year|default:0 }}</p>
+            <p>Total Tranzacții: {{ year_stats.total_tranzactii_year|default:0 }}</p>
         </div>
     </div>
 
     <!-- Monthly Summary Card -->
     <div class="card">
         <div class="card-header">
-            <h3>{{ month }} {{ year }} Summary</h3>
+            <h3>Sumar Lunar {{ month }} {{ year }}</h3>
         </div>
         <div class="card-body">
             <p>Total Tichete: {{ month_stats.total_bilete_month|default:0 }}</p>
             <p>Total Venituri: {{ month_stats.total_suma_month|default:0 }} RON</p>
-            <p>Total Tranzactii: {{ month_stats.total_tranzactii_month|default:0 }}</p>
+            <p>Total Tranzacții: {{ month_stats.total_tranzactii_month|default:0 }}</p>
         </div>
     </div>
+
    <div class="row">
     <div class="col-md-6">
         <canvas id="ticketsChart"></canvas>
@@ -86,13 +89,14 @@
         <canvas id="revenueChart"></canvas>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
         function pingNow() {
             fetch('/monitoring/ping-now/')
                 .then(response => response.json())
                 .then(data => {
-                    alert('Ping completed: ' + data.message);
+                    alert('Ping finalizat: ' + data.message);
                     location.reload();
                 });
         }
