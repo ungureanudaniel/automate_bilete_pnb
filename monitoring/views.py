@@ -31,12 +31,12 @@ def dashboard(request):
     machines = TicketMachine.objects.all()
     # Calculate online status
     online_threshold = timezone.now() - timedelta(minutes=5)
-    online_machines = machines.filter(last_seen__gte=online_threshold)
-    offline_machines = machines.filter(last_seen__lt=online_threshold) | machines.filter(last_seen__isnull=True)
+    online_machines = machines.filter(last_online__gte=online_threshold)
+    offline_machines = machines.filter(last_online__lt=online_threshold) | machines.filter(last_online__isnull=True)
     
     # For each machine, add status
     for machine in machines:
-        machine.is_online = machine.last_seen and machine.last_seen >= online_threshold
+        machine.is_online = machine.last_online and machine.last_online >= online_threshold
     # ========== CURRENT YEAR STATS ==========
     year_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[year_start, year_end]

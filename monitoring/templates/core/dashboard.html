@@ -22,7 +22,7 @@
                         {% endif %}
                     </p>
                     <p class="card-text">
-                        <small>Last seen: {{ machine.last_seen|default:"Never" }}</small>
+                        <small>Last seen: {{ machine.last_online|default:"Never" }}</small>
                     </p>
                 </div>
             </div>
