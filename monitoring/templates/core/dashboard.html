@@ -22,7 +22,7 @@
                         {% endif %}
                     </p>
                     <p class="card-text">
-                        <small>Ultima activitate: {{ machine.last_seen|default:"Niciodată" }}</small>
+                        <small>Ultima activitate: {{ machine.last_seen|localtime|date:"Y-m-d H:i:s"|default:"Niciodată" }}</small>
                     </p>
                 </div>
             </div>
