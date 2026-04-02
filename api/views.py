@@ -30,6 +30,12 @@ def create_ticket(request):
         return Response({'ticket_id': serializer.data.get('nr', None), 'status': 'ok'})
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def machine_list(request):
+    """Return list of all POS machines"""
+    machines = PosMachine.objects.all().values('pos_id', 'name', 'ip_address', 'last_seen')
+    return Response(list(machines))
+
 @api_view(['POST'])
 def heartbeat(request):
     machine = check_token(request)

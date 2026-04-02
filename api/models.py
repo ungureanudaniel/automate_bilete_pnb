@@ -16,21 +16,12 @@ class PosMachine(models.Model):
     class Meta:
         db_table = 'pos_machines'
 
+    @property
     def is_online(self):
-            """Ping the machine to check if it's online"""
-            try:
-                param = '-n' if platform.system().lower() == 'windows' else '-c'
-                command = ['ping', param, '1', self.ip_address]
-                
-                result = subprocess.run(
-                    command,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    timeout=5
-                )
-                return result.returncode == 0
-            except:
-                return False
+        """Return True if heartbeat received in last 5 minutes"""
+        if not self.last_seen:
+            return False
+        return timezone.now() - self.last_seen < timedelta(minutes=5)
         
     def update_last_seen(self):
         """Update last_seen timestamp"""
@@ -38,5 +29,5 @@ class PosMachine(models.Model):
         self.save(update_fields=['last_seen'])
         
     def __str__(self):
-        status = "🟢" if self.is_online() else "🔴"
+        status = "🟢" if self.is_online else "🔴"
         return f"{status} {self.name} (POS {self.pos_id}) - {self.ip_address}"
