@@ -13,4 +13,4 @@ def sales_details(request):
         ],
     }
     
-    return render(request, 'sales_details/sales_details.html', {'sales_data': sales_data})
+    return render(request, '/sales_details.html', {'sales_data': sales_data})
