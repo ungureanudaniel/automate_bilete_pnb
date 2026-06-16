@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'monitoring',
     'parameters',
     'api',
+    'sales_details_app',
+    'statistics_app',
     'rest_framework',
     
 ]
