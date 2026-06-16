@@ -11,7 +11,7 @@ urlpatterns = [
     path('health/', health_check),
     path('api/', include('api.urls')),
     path('', include('monitoring.urls')),
-    path('sales_details_app/', include('sales_details_app.urls')),
-    path('statistics_app/', include('statistics_app.urls')),
+    path('sales_details/', include('sales_details_app.urls')),
+    path('statistics/', include('statistics_app.urls')),
     path('parameters/', include('parameters.urls')),
 ]
