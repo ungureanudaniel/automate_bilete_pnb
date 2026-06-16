@@ -1,0 +1,157 @@
+:root {
+            --primary-dark: #1a3c2a;
+            --primary-green: #2d6a4f;
+            --primary-light: #40916c;
+            --accent-gold: #d4a373;
+            --bg-light: #f0f4f2;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Top Navigation */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-green));
+            padding: 0.8rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .navbar-custom .navbar-brand i {
+            color: var(--accent-gold);
+            margin-right: 10px;
+        }
+
+        .navbar-custom .nav-link {
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.15);
+        }
+        .navbar-custom .nav-link i {
+            margin-right: 8px;
+        }
+
+        /* Status Dots */
+        .status-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .status-online {
+            background-color: #28a745;
+            box-shadow: 0 0 12px rgba(40, 167, 69, 0.6);
+            animation: pulse-green 2s infinite;
+        }
+        .status-offline {
+            background-color: #dc3545;
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.4);
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+
+        /* Machine Cards */
+        .machine-card {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+        .machine-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .machine-card .card-header {
+            border-radius: 16px 16px 0 0;
+            font-weight: 600;
+            padding: 0.8rem 1.2rem;
+        }
+        .machine-card .card-header i {
+            margin-right: 8px;
+        }
+
+        /* Summary Cards */
+        .summary-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            padding: 1.5rem;
+            background: white;
+        }
+        .summary-card .number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .summary-card .label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .summary-card .icon {
+            font-size: 2.5rem;
+            opacity: 0.2;
+            float: right;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .chart-container h5 {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.2rem;
+        }
+
+        /* Badge */
+        .badge-status {
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .section-title {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin: 2rem 0 1.2rem 0;
+            border-left: 4px solid var(--primary-green);
+            padding-left: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-custom {
+                padding: 0.5rem 1rem;
+            }
+            .navbar-custom .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .summary-card .number {
+                font-size: 1.6rem;
+            }
+        }

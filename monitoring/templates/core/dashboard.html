@@ -1,29 +1,88 @@
 {% load tz %}
 <!DOCTYPE html>
-<html>
+<html lang="ro">
 <head>
-    <title>Dashboard Automatizare Bilete</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bucegi Park - Ticket Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>📡 Monitorizare Stare Aparate</h1>
-    
-    <!-- Machine status cards -->
-    <div class="row">
+
+<!-- ========== TOP NAVIGATION ========== -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-mountain"></i> Bucegi Park
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">
+                        <i class="fas fa-chart-pie"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sales/">
+                        <i class="fas fa-receipt"></i> Sales Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/statistics/">
+                        <i class="fas fa-chart-bar"></i> Statistics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/">
+                        <i class="fas fa-cog"></i> Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ========== MAIN CONTENT ========== -->
+<div class="container-fluid px-4 py-4">
+
+    <!-- ===== MACHINE STATUS SECTION ===== -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="section-title mb-0">
+            <i class="fas fa-server me-2" style="color: var(--primary-green);"></i> Monitorizare Stare Aparate
+        </h4>
+        <span class="badge bg-secondary">
+            <i class="fas fa-circle text-success me-1"></i> {{ online_machines }} online
+            <span class="mx-1">|</span>
+            <i class="fas fa-circle text-danger me-1"></i> {{ offline }} offline
+        </span>
+    </div>
+
+    <div class="row g-3">
         {% for machine in machines %}
-        <div class="col-md-3 mb-3">
-            <div class="card {% if machine.is_online %}border-success{% else %}border-danger{% endif %}">
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="card machine-card h-100">
+                <div class="card-header {% if machine.is_online %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                    <i class="fas fa-ticket-alt"></i> POS {{ machine.pos_id }}
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">POS {{ machine.pos_id }}</h5>
-                    <p class="card-text">
-                        Status: 
+                    <p class="card-text mb-1">
+                        <span class="status-dot {% if machine.is_online %}status-online{% else %}status-offline{% endif %}"></span>
                         {% if machine.is_online %}
-                            <span class="badge bg-success">Online</span>
+                            <span class="text-success fw-bold">Online</span>
                         {% else %}
-                            <span class="badge bg-danger">Offline</span>
+                            <span class="text-danger fw-bold">Offline</span>
                         {% endif %}
                     </p>
                     <p class="card-text">
-                        <small>Ultima activitate: {{ machine.ultima_conectare|localtime|date:"Y-m-d H:i:s"|default:"Niciodată" }}</small>
+                        <small class="text-muted">
+                            <i class="far fa-clock me-1"></i>
+                            {{ machine.ultima_conectare|localtime|date:"Y-m-d H:i:s"|default:"Niciodată" }}
+                        </small>
                     </p>
                 </div>
             </div>
@@ -31,57 +90,141 @@
         {% endfor %}
     </div>
 
-    <h1>Dashboard (Anul curent)</h1>
-
-    <!-- Yearly Summary Card -->
-    <div class="card">
-        <div class="card-header">
-            <h3>Sumar Anual {{ year }}</h3>
+    <!-- ===== SUMMARY CARDS ===== -->
+    <div class="row mt-5 g-3">
+        <div class="col-md-3 col-sm-6">
+            <div class="summary-card">
+                <i class="fas fa-ticket-alt icon"></i>
+                <div class="number">{{ year_stats.total_bilete_year|default:0 }}</div>
+                <div class="label">Tichete (anul curent)</div>
+            </div>
         </div>
-        <div class="card-body">
-            <p>Total Tichete: {{ year_stats.total_bilete_year|default:0 }}</p>
-            <p>Total Venituri: {{ year_stats.total_suma_year|default:0 }} RON</p>
-            <p>Total Tranzacții: {{ year_stats.total_tranzactii_year|default:0 }}</p>
+        <div class="col-md-3 col-sm-6">
+            <div class="summary-card">
+                <i class="fas fa-money-bill-wave icon"></i>
+                <div class="number">{{ year_stats.total_suma_year|default:0 }} RON</div>
+                <div class="label">Venituri (anul curent)</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="summary-card">
+                <i class="fas fa-shopping-cart icon"></i>
+                <div class="number">{{ year_stats.total_tranzactii_year|default:0 }}</div>
+                <div class="label">Tranzacții (anul curent)</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="summary-card">
+                <i class="fas fa-calendar-alt icon"></i>
+                <div class="number">{{ month_stats.total_bilete_month|default:0 }}</div>
+                <div class="label">Tichete (luna curentă)</div>
+            </div>
         </div>
     </div>
 
-    <!-- Monthly Summary Card -->
-    <div class="card">
-        <div class="card-header">
-            <h3>Sumar Lunar {{ month }} {{ year }}</h3>
+    <!-- ===== CHARTS ===== -->
+    <div class="row mt-4 g-3">
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <h5><i class="fas fa-chart-bar me-2" style="color: var(--primary-green);"></i> Vânzări pe lună</h5>
+                <canvas id="yearlyChart"></canvas>
+            </div>
         </div>
-        <div class="card-body">
-            <p>Total Tichete: {{ month_stats.total_bilete_month|default:0 }}</p>
-            <p>Total Venituri: {{ month_stats.total_suma_month|default:0 }} RON</p>
-            <p>Total Tranzacții: {{ month_stats.total_tranzactii_month|default:0 }}</p>
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <h5><i class="fas fa-utensils me-2" style="color: var(--accent-gold);"></i> Produse vândute</h5>
+                <canvas id="productChart"></canvas>
+            </div>
         </div>
     </div>
 
-   <div class="row">
-    <div class="col-md-6">
-        <canvas id="ticketsChart"></canvas>
+    <!-- ===== PAPER USAGE ===== -->
+    <div class="row mt-4 g-3">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5><i class="fas fa-print me-2" style="color: var(--primary-dark);"></i> Stoc hârtie</h5>
+                <canvas id="paperChart" height="80"></canvas>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
-        <canvas id="revenueChart"></canvas>
-    </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- ========== SCRIPTS ========== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-        function pingNow() {
-            fetch('/monitoring/ping-now/')
-                .then(response => response.json())
-                .then(data => {
-                    alert('Ping finalizat: ' + data.message);
-                    location.reload();
-                });
+// Yearly Chart
+const ctx1 = document.getElementById('yearlyChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: {{ year_pos_labels_json|safe }},
+        datasets: [{
+            label: 'Tichete vândute ({{ year }})',
+            data: {{ year_pos_tickets_json|safe }},
+            backgroundColor: 'rgba(45, 106, 79, 0.7)',
+            borderColor: 'rgba(45, 106, 79, 1)',
+            borderWidth: 1,
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
         }
-        
-        function pingMachine(posId) {
-            fetch(`/monitoring/ping-machine/${posId}/`)
-                .then(() => location.reload());
-        }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    }
+});
 
+// Product Chart
+const ctx2 = document.getElementById('productChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: {{ year_product_labels_json|safe }},
+        datasets: [{
+            data: {{ year_product_values_json|safe }},
+            backgroundColor: ['#2d6a4f', '#40916c', '#52b788', '#95d5b2', '#b7e4c7', '#d8f3dc']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+
+// Paper Chart
+const ctx3 = document.getElementById('paperChart').getContext('2d');
+new Chart(ctx3, {
+    type: 'bar',
+    data: {
+        labels: {{ paper_labels_json|safe }},
+        datasets: [{
+            label: 'Hârtie rămasă (%)',
+            data: {{ paper_remaining_json|safe }},
+            backgroundColor: {{ paper_colors_json|safe }},
+            borderColor: {{ paper_colors_json|safe }},
+            borderWidth: 1,
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: { callback: (v) => v + '%' }
+            }
+        }
+    }
+});
+</script>
+
+</body>
 </html>

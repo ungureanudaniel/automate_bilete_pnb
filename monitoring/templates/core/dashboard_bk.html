@@ -1,0 +1,87 @@
+{% load tz %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Automatizare Bilete</title>
+</head>
+<body>
+    <h1>📡 Monitorizare Stare Aparate</h1>
+    
+    <!-- Machine status cards -->
+    <div class="row">
+        {% for machine in machines %}
+        <div class="col-md-3 mb-3">
+            <div class="card {% if machine.is_online %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">POS {{ machine.pos_id }}</h5>
+                    <p class="card-text">
+                        Status: 
+                        {% if machine.is_online %}
+                            <span class="badge bg-success">🟢 Online</span>
+                        {% else %}
+                            <span class="badge bg-danger">🔴 Offline</span>
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <small>Ultima activitate: {{ machine.ultima_conectare|localtime|date:"Y-m-d H:i:s"|default:"Niciodată" }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h1>Dashboard (Anul curent)</h1>
+
+    <!-- Yearly Summary Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Sumar Anual {{ year }}</h3>
+        </div>
+        <div class="card-body">
+            <p>Total Tichete: {{ year_stats.total_bilete_year|default:0 }}</p>
+            <p>Total Venituri: {{ year_stats.total_suma_year|default:0 }} RON</p>
+            <p>Total Tranzacții: {{ year_stats.total_tranzactii_year|default:0 }}</p>
+        </div>
+    </div>
+
+    <!-- Monthly Summary Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Sumar Lunar {{ month }} {{ year }}</h3>
+        </div>
+        <div class="card-body">
+            <p>Total Tichete: {{ month_stats.total_bilete_month|default:0 }}</p>
+            <p>Total Venituri: {{ month_stats.total_suma_month|default:0 }} RON</p>
+            <p>Total Tranzacții: {{ month_stats.total_tranzactii_month|default:0 }}</p>
+        </div>
+    </div>
+
+   <div class="row">
+    <div class="col-md-6">
+        <canvas id="ticketsChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+        function pingNow() {
+            fetch('/monitoring/ping-now/')
+                .then(response => response.json())
+                .then(data => {
+                    alert('Ping finalizat: ' + data.message);
+                    location.reload();
+                });
+        }
+        
+        function pingMachine(posId) {
+            fetch(`/monitoring/ping-machine/${posId}/`)
+                .then(() => location.reload());
+        }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</html>
