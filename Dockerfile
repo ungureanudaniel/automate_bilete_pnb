@@ -1,4 +1,3 @@
-# Dockerfile
 FROM python:3.12.3-slim
 
 # Set environment variables
@@ -34,12 +33,11 @@ RUN chown -R django:django /app
 USER django
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health/ || exit 1
+    CMD curl -f http://localhost:8001/health/ || exit 1
 
 # Run application
-#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "server_automate_main.wsgi:application"]
-CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=server_automate_main.settings && gunicorn --bind 0.0.0.0:8000 server_automate_main.wsgi:application"]
+CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=server_automate_main.settings && gunicorn --bind 0.0.0.0:8001 server_automate_main.wsgi:application"]
