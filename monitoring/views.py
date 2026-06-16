@@ -51,6 +51,9 @@ def dashboard(request):
         rows = cursor.fetchall()
 
     print(f"Fetched {len(rows)} machines from database")  # Debug log
+    for row in rows:
+        pos_id, name, ip_address, token, cod_serie, ultima_conectare, is_online = row
+        print(f"POS {pos_id}: is_online={is_online}, last_seen={ultima_conectare}")
     # machines status
     machines = []
     online_count = 0
