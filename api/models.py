@@ -1,10 +1,7 @@
-# api/models.py
-from datetime import timedelta, timezone
-import os
-import subprocess
-import platform
 from django.db import models
-from django.utils import timezone as django_timezone
+from django.utils import timezone
+from datetime import timedelta
+
 
 class PosMachine(models.Model):
     pos_id = models.IntegerField(primary_key=True)
@@ -31,3 +28,13 @@ class PosMachine(models.Model):
     def __str__(self):
         status = "🟢" if self.is_online else "🔴"
         return f"{status} {self.name} (POS {self.pos_id}) - {self.ip_address}"
+
+
+class KioskOnline(models.Model):
+    pos_id = models.IntegerField(primary_key=True)
+    cod_serie = models.CharField(max_length=20, blank=True, null=True)
+    ultima_conectare = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'kiosk_online'

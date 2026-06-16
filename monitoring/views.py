@@ -1,13 +1,14 @@
 from calendar import monthrange
+from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
 from parameters.models import PosPaper, Tranzactie, Produs
-from api.models import PosMachine
 from django.db.models import Sum, Count
 from django.utils import timezone
+from api.models import KioskOnline
 import json
 from datetime import datetime, timedelta
-from monitoring.utils import ping_all_machines
+# from monitoring.utils import ping_all_machines
 
 def dashboard(request):
     # Current date/time
@@ -28,18 +29,49 @@ def dashboard(request):
     last_30d = timezone.now() - timedelta(days=30)
     last_12m = timezone.now() - timedelta(days=365)
     last_24h = timezone.now() - timedelta(hours=24)
-    # machines status
-    machines = PosMachine.objects.all()
-    # Calculate online status
     online_threshold = timezone.now() - timedelta(minutes=5)
-    # Calculate online/offline counts in Python
+    # Get machine status from KioskOnline view
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                pm.pos_id,
+                pm.name,
+                pm.ip_address,
+                pm.token,
+                ko.cod_serie,
+                ko.ultima_conectare,
+                CASE 
+                    WHEN ko.ultima_conectare > NOW() - INTERVAL 5 MINUTE THEN 1
+                    ELSE 0
+                END as is_online
+            FROM pos_machines pm
+            LEFT JOIN kiosk_online ko ON pm.pos_id = ko.pos_id
+            ORDER BY pm.pos_id
+        """)
+        rows = cursor.fetchall()
+
+
+    # machines status
+    machines = []
     online_count = 0
     offline_count = 0
-    for machine in machines:
-        if machine.is_online:  # This calls your property/method
+    for row in rows:
+        pos_id, name, ip_address, token, cod_serie, ultima_conectare, is_online = row
+        machines.append({
+            'pos_id': pos_id,
+            'name': name,
+            'ip_address': ip_address,
+            'token': token,
+            'cod_serie': cod_serie,
+            'ultima_conectare': ultima_conectare,
+            'is_online': bool(is_online)
+        })
+
+        if is_online:
             online_count += 1
         else:
             offline_count += 1
+
     # ========== CURRENT YEAR STATS ==========
     year_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[year_start, year_end]
@@ -71,7 +103,6 @@ def dashboard(request):
         .order_by('-sold_count')
     )
     
-    # ========== CURRENT MONTH STATS ==========
     month_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[month_start, month_end]
     ).aggregate(
@@ -102,7 +133,6 @@ def dashboard(request):
         .order_by('-sold_count')
     )
         
-    # ========== PAPER USAGE (unchanged) ==========
     paper_labels = []
     paper_remaining = []
     paper_colors = []
@@ -197,7 +227,7 @@ def ping_now(request):
 
 def machine_status_api(request):
     """API endpoint pentru status"""
-    machines = PosMachine.objects.all().values('pos_id', 'ip_address', 'is_online', 'last_online')
+    machines = KioskOnline.objects.all().values('pos_id', 'ip_address', 'is_online', 'last_online')
     return JsonResponse(list(machines), safe=False)
 
 def chart_data(request):
