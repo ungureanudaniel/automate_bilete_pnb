@@ -18,11 +18,11 @@ class PosMachine(models.Model):
         """Return True if heartbeat received in last 5 minutes"""
         if not self.last_seen:
             return False
-        return django_timezone.now() - self.last_seen < timedelta(minutes=5)
+        return timezone.now() - self.last_seen < timedelta(minutes=5)
         
     def update_last_seen(self):
         """Update last_seen timestamp"""
-        self.last_seen = django_timezone.now()
+        self.last_seen = timezone.now()
         self.save(update_fields=['last_seen'])
         
     def __str__(self):

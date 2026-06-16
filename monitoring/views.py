@@ -8,7 +8,7 @@ from django.utils import timezone
 from api.models import KioskOnline
 import json
 from datetime import datetime, timedelta
-# from monitoring.utils import ping_all_machines
+from monitoring.utils import ping_all_machines
 
 def dashboard(request):
     # Current date/time
@@ -205,9 +205,9 @@ def dashboard(request):
         'month_product_labels_json': json.dumps(month_product_labels),
         'month_product_values_json': json.dumps(month_product_values),
         
-        # Machine status
-        'machines': machines.order_by('pos_id'),
-        'total_machines': machines.count(),
+        # Machine status (machines is a list from raw SQL; sort by pos_id)
+        'machines': sorted(machines, key=lambda m: m.get('pos_id')),
+        'total_machines': len(machines),
         'online_machines': online_count,
         'offline': offline_count,
         
