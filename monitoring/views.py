@@ -50,7 +50,7 @@ def dashboard(request):
         """)
         rows = cursor.fetchall()
 
-
+    print(f"Fetched {len(rows)} machines from database")  # Debug log
     # machines status
     machines = []
     online_count = 0
