@@ -23,22 +23,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/">
+                    <a class="nav-link active" href="{% url 'monitoring:dashboard' %}">
                         <i class="fas fa-chart-pie"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/sales/">
+                    <a class="nav-link" href="{% url 'sales_details_app:dashboard' %}">
                         <i class="fas fa-receipt"></i> Detalii Vânzări
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/statistics/">
+                    <a class="nav-link" href="{% url 'statistics_app:dashboard' %}">
                         <i class="fas fa-chart-bar"></i> Statistici
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin/">
+                    <a class="nav-link" href="{% url 'admin:index' %}">
                         <i class="fas fa-cog"></i> Admin
                     </a>
                 </li>

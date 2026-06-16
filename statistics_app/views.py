@@ -9,4 +9,4 @@ def statistics(request):
         'yearly_sales': yearly_sales,
         'product_sales': product_sales,
     }
-    return render(request, 'statistics_app/dashboard.html', context)
+    return render(request, 'statistics_app/statistics.html', context)
