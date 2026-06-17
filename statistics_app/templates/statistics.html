@@ -8,132 +8,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-dark: #1a3c2a;
-            --primary-green: #2d6a4f;
-            --primary-light: #40916c;
-            --accent-gold: #d4a373;
-            --bg-light: #f0f4f2;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .navbar-custom {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-green));
-            padding: 0.8rem 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .navbar-custom .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: white;
-        }
-        .navbar-custom .navbar-brand i {
-            color: var(--accent-gold);
-            margin-right: 10px;
-        }
-
-        .navbar-custom .nav-link {
-            color: rgba(255,255,255,0.8);
-            font-weight: 500;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .nav-link.active {
-            color: white;
-            background: rgba(255,255,255,0.15);
-        }
-        .navbar-custom .nav-link i {
-            margin-right: 8px;
-        }
-
-        .section-title {
-            color: var(--primary-dark);
-            font-weight: 600;
-            margin: 2rem 0 1.2rem 0;
-            border-left: 4px solid var(--primary-green);
-            padding-left: 1rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            height: 100%;
-            transition: transform 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-        }
-        .stat-card .number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-        }
-        .stat-card .label {
-            color: #6c757d;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .stat-card .icon {
-            font-size: 2rem;
-            color: var(--primary-light);
-            float: right;
-            opacity: 0.3;
-        }
-
-        .chart-container {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            margin-bottom: 1.5rem;
-        }
-        .chart-container h5 {
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 1.2rem;
-        }
-
-        .insight-box {
-            background: var(--primary-dark);
-            color: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .insight-box .number {
-            font-size: 3rem;
-            font-weight: 700;
-        }
-        .insight-box .label {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-        .insight-box i {
-            font-size: 2.5rem;
-            opacity: 0.3;
-            float: right;
-        }
-    </style>
 </head>
 <body>
 
 <!-- ========== TOP NAVIGATION ========== -->
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <i class="fas fa-mountain"></i> Bucegi Park
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <i class="fas"><img src="{% static 'images/bucegi-logo.png' %}" alt="Parcul Natural Bucegi" class="img-fluid" style="max-height: 40px;"></i> Parcul Natural Bucegi
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -141,22 +23,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">
+                    <a class="nav-link" href="{% url 'dashboard' %}">
                         <i class="fas fa-chart-pie"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/sales/">
-                        <i class="fas fa-receipt"></i> Sales Details
+                    <a class="nav-link" href="{% url 'sales_details' %}">
+                        <i class="fas fa-receipt"></i> Detalii Vânzări
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/statistics/">
-                        <i class="fas fa-chart-bar"></i> Statistics
+                    <a class="nav-link active" href="{% url 'statistics' %}">
+                        <i class="fas fa-chart-bar"></i> StatisticI
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin/">
+                    <a class="nav-link" href="{% url 'admin' %}">
                         <i class="fas fa-cog"></i> Admin
                     </a>
                 </li>

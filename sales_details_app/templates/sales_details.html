@@ -8,162 +8,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-dark: #1a3c2a;
-            --primary-green: #2d6a4f;
-            --primary-light: #40916c;
-            --accent-gold: #d4a373;
-            --bg-light: #f0f4f2;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .navbar-custom {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-green));
-            padding: 0.8rem 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .navbar-custom .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: white;
-        }
-        .navbar-custom .navbar-brand i {
-            color: var(--accent-gold);
-            margin-right: 10px;
-        }
-
-        .navbar-custom .nav-link {
-            color: rgba(255,255,255,0.8);
-            font-weight: 500;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .nav-link.active {
-            color: white;
-            background: rgba(255,255,255,0.15);
-        }
-        .navbar-custom .nav-link i {
-            margin-right: 8px;
-        }
-
-        .section-title {
-            color: var(--primary-dark);
-            font-weight: 600;
-            margin: 2rem 0 1.2rem 0;
-            border-left: 4px solid var(--primary-green);
-            padding-left: 1rem;
-        }
-
-        .table-custom {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-        .table-custom thead {
-            background: var(--primary-green);
-            color: white;
-        }
-        .table-custom th {
-            font-weight: 600;
-            padding: 1rem;
-        }
-        .table-custom td {
-            padding: 0.8rem 1rem;
-            vertical-align: middle;
-        }
-        .table-custom tbody tr:hover {
-            background-color: rgba(45, 106, 79, 0.05);
-        }
-
-        .filter-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            margin-bottom: 1.5rem;
-        }
-
-        .filter-card select,
-        .filter-card input {
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 0.5rem 1rem;
-            width: 100%;
-        }
-
-        .btn-primary-custom {
-            background: var(--primary-green);
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1.5rem;
-            color: white;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-        .btn-primary-custom:hover {
-            background: var(--primary-dark);
-            color: white;
-        }
-
-        .badge-pos {
-            background: var(--primary-light);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        .summary-card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            padding: 1.5rem;
-            background: white;
-        }
-        .summary-card .number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-        }
-        .summary-card .label {
-            color: #6c757d;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .pagination-custom {
-            margin-top: 1.5rem;
-        }
-        .pagination-custom .page-link {
-            color: var(--primary-green);
-            border-radius: 8px;
-            margin: 0 3px;
-        }
-        .pagination-custom .page-item.active .page-link {
-            background: var(--primary-green);
-            border-color: var(--primary-green);
-            color: white;
-        }
-    </style>
 </head>
 <body>
 
 <!-- ========== TOP NAVIGATION ========== -->
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <i class="fas fa-mountain"></i> Bucegi Park
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <i class="fas"><img src="{% static 'images/bucegi-logo.png' %}" alt="Parcul Natural Bucegi" class="img-fluid" style="max-height: 40px;"></i> Parcul Natural Bucegi
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -171,22 +23,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">
+                    <a class="nav-link" href="{% url 'dashboard' %}">
                         <i class="fas fa-chart-pie"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/sales/">
-                        <i class="fas fa-receipt"></i> Sales Details
+                    <a class="nav-link active" href="{% url 'sales_details' %}">
+                        <i class="fas fa-receipt"></i> Detalii Vânzări
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/statistics/">
-                        <i class="fas fa-chart-bar"></i> Statistics
+                    <a class="nav-link" href="{% url 'statistics' %}">
+                        <i class="fas fa-chart-bar"></i> Statistici
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin/">
+                    <a class="nav-link" href="{% url 'admin' %}">
                         <i class="fas fa-cog"></i> Admin
                     </a>
                 </li>

@@ -14,8 +14,8 @@
 <!-- ========== TOP NAVIGATION ========== -->
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            <i class="fas"><img src="/static/images/bucegi-logo.png" alt="Parcul Natural Bucegi" class="img-fluid" style="max-height: 40px;"></i> Parcul Natural Bucegi
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <i class="fas"><img src="{% static 'images/bucegi-logo.png' %}" alt="Parcul Natural Bucegi" class="img-fluid" style="max-height: 40px;"></i> Parcul Natural Bucegi
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -38,7 +38,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'admin:index' %}">
+                    <a class="nav-link" href="{% url 'admin' %}">
                         <i class="fas fa-cog"></i> Admin
                     </a>
                 </li>
