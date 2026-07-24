@@ -183,9 +183,9 @@ const ctx2 = document.getElementById('productChart').getContext('2d');
 new Chart(ctx2, {
     type: 'doughnut',
     data: {
-        labels: {{ year_product_labels_json|safe }},
+        labels: {{ month_product_labels_json|safe }},
         datasets: [{
-            data: {{ year_product_values_json|safe }},
+            data: {{ month_product_values_json|safe }},
             backgroundColor: ['#2d6a4f', '#40916c', '#52b788', '#95d5b2', '#b7e4c7', '#d8f3dc']
         }]
     },
