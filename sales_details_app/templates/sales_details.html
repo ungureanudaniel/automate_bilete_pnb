@@ -57,26 +57,26 @@
         <h4 class="section-title mb-0">
             <i class="fas fa-receipt me-2" style="color: var(--primary-green);"></i> Detalii Vânzări
         </h4>
-        <span class="text-muted">{{ total_sales|default:0 }} tranzacții</span>
+        <span class="text-muted">{{ year_stats.total_tranzactii_year|default:0 }} tranzacții</span>
     </div>
 
     <!-- ===== SUMMARY CARDS ===== -->
     <div class="row g-3 mb-4">
         <div class="col-md-3 col-sm-6">
             <div class="summary-card">
-                <div class="number">{{ total_tickets|default:0 }}</div>
+                <div class="number">{{ year_stats.total_bilete_year|default:0 }}</div>
                 <div class="label">Total Tichete</div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="summary-card">
-                <div class="number">{{ total_revenue|default:0|floatformat:2 }} RON</div>
+                <div class="number">{{ year_stats.total_suma_year|default:0|floatformat:2 }} RON</div>
                 <div class="label">Total Venituri</div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="summary-card">
-                <div class="number">{{ avg_ticket_value|default:0|floatformat:2 }} RON</div>
+                <div class="number">{{ year_stats.total_suma_year|default:0|floatformat:2 }} RON</div>
                 <div class="label">Valoare Medie / Bilet</div>
             </div>
         </div>
