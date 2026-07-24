@@ -1,31 +1,24 @@
 from django.contrib import admin
 from parameters.models import TicketMachine, Produs, Serie, Tranzactie, UserLegacy
 
-@admin.register(TicketMachine)
-class TicketMachineAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pos_id', 'is_online', 'ultima_conectare')
-    search_fields = ('pos_id',)
-    list_filter = ('is_online',)
-
 @admin.register(Produs)
 class ProdusAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nume', 'pret')
-    search_fields = ('nume',)
+    list_display = ('denumire', 'pret')
+    search_fields = ('denumire',)
 
 @admin.register(Serie)
 class SerieAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nume', 'data_creare')
-    search_fields = ('nume',)
-    ordering = ('-data_creare',)
+    list_display = ('serie', 'numar', 'locatie_pos')
+    search_fields = ('serie',)
+    ordering = ('-serie',)
 
 @admin.register(Tranzactie)
 class TranzactieAdmin(admin.ModelAdmin):
-    list_display = ('id', 'ticket_machine', 'produs', 'cantitate', 'data_tranzactie')
-    search_fields = ('ticket_machine__pos_id', 'produs__nume')
+    list_display = ('id_produs', 'pos_id', 'cantitate', 'data_tranzactie')
+    search_fields = ('pos_id', 'id_produs')
     list_filter = ('data_tranzactie',)
 
 @admin.register(UserLegacy)
 class UserLegacyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email')
-    search_fields = ('username', 'email')
-    ordering = ('-created_at',)
+    list_display = ('nume', 'tip')
+    search_fields = ('nume', 'tip')
