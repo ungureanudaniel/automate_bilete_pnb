@@ -4,6 +4,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from parameters.models import Tranzactie
 from django.shortcuts import render
 from calendar import monthrange
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.db.models import Sum, Count
 import json
@@ -16,22 +17,64 @@ def sales_details(request):
     current_year = now.year
     current_month = now.month
     current_month_name = now.strftime('%B')  # e.g., "February"
-    # Current year filter
-    year_start = timezone.make_aware(datetime(current_year, 1, 1))
-    year_end = timezone.make_aware(datetime(current_year, 12, 31, 23, 59, 59))
-    
-    # Current month filter
-    month_start = timezone.make_aware(datetime(current_year, current_month, 1))
-    last_day = monthrange(current_year, current_month)[1]
-    month_end = timezone.make_aware(datetime(current_year, current_month, last_day, 23, 59, 59))
 
+    period = request.GET.get('period', 'all')
+    selected_pos = request.GET.get('pos_id', None)
+    page = request.GET.get('page', 1)
+    date_filter = {}
+
+    if period == 'today':
+        start_date = timezone.make_aware(datetime(now.year, now.month, now.day))
+        end_date = start_date + timedelta(days=1)
+        date_filter = {'data_tranzactie__gte': start_date, 'data_tranzactie__lt': end_date} 
+    elif period == 'week':  
+        start_date = timezone.make_aware(datetime(now.year, now.month, now.day)) - timedelta(days=now.weekday())
+        end_date = start_date + timedelta(days=7)
+        date_filter = {'data_tranzactie__gte': start_date, 'data_tranzactie__lt': end_date}
+    elif period == 'month':
+        start_date = timezone.make_aware(datetime(now.year, now.month, 1))
+        last_day = monthrange(now.year, now.month)[1]
+        end_date = timezone.make_aware(datetime(now.year, now.month, last_day, 23, 59, 59))
+        date_filter = {'data_tranzactie__gte': start_date, 'data_tranzactie__lt': end_date}
+    elif period == 'year':
+        start_date = timezone.make_aware(datetime(now.year, 1, 1))
+        end_date = timezone.make_aware(datetime(now.year, 12, 31, 23, 59, 59))
+        date_filter = {'data_tranzactie__gte': start_date, 'data_tranzactie__lt': end_date}
+    else:  # Default to all time
+        date_filter = {}
+
+    # build the queryset based on filters
+    transactions = Tranzactie.objects.all()
+
+    # Apply date filter if it exists
+    if date_filter:
+        transactions = transactions.filter(**date_filter)
+    # Apply POS filter if it exists
+    if selected_pos:
+        transactions = transactions.filter(pos_id=selected_pos)
+
+    transactions = transactions.order_by('-data_tranzactie')
+    
     # ========== TOTAL STATS ==========
     total_stats = Tranzactie.objects.aggregate(
         total_bilete=Sum('cantitate'),
         total_suma=Sum('total'),
         total_tranzactii=Count('id')
     )
-    # ========== CURRENT YEAR STATS ==========
+    total_tranzactii = total_stats.get('total_tranzactii', 0) or 1
+    total_bilete = total_stats.get('total_bilete', 0) or 1
+    total_suma = total_stats.get('total_suma', 0) or 0
+
+    avg_transaction_value = total_suma / total_tranzactii if total_tranzactii > 0 else 0
+    avg_ticket_value = total_suma / total_bilete if total_bilete > 0 else 0
+
+    # ========== PAGINATION ==========
+    paginator = Paginator(transactions, 50)  # 50 transactions per page
+    page_obj = paginator.get_page(page)
+
+    year_start = timezone.make_aware(datetime(current_year, 1, 1))
+    year_end = timezone.make_aware(datetime(current_year, 12, 31, 23, 59, 59))
+
     year_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[year_start, year_end]
     ).aggregate(
@@ -39,13 +82,11 @@ def sales_details(request):
         total_suma_year=Sum('total'),
         total_tranzactii_year=Count('id')
     )
-    year_pos_tickets = Tranzactie.objects.filter(
-        data_tranzactie__range=[year_start, year_end]
-    ).values('pos_id').annotate(total_bilete=Sum('cantitate')).order_by('pos_id')
-    year_product_values = Tranzactie.objects.filter(
-        data_tranzactie__range=[year_start, year_end]
-    ).values('id_produs').annotate(total_suma=Sum('total')).order_by('-total_suma')
-    # ========== CURRENT MONTH STATS ==========
+
+    month_start = timezone.make_aware(datetime(current_year, current_month, 1))
+    last_day = monthrange(current_year, current_month)[1]
+    month_end = timezone.make_aware(datetime(current_year, current_month, last_day, 23, 59, 59))
+    
     month_stats = Tranzactie.objects.filter(
         data_tranzactie__range=[month_start, month_end]
     ).aggregate(
@@ -53,43 +94,27 @@ def sales_details(request):
         total_suma_month=Sum('total'),
         total_tranzactii_month=Count('id')
     )
-    month_pos_tickets = Tranzactie.objects.filter(
-        data_tranzactie__range=[month_start, month_end]
-    ).values('pos_id').annotate(total_bilete=Sum('cantitate')).order_by('pos_id')
-    month_product_values = Tranzactie.objects.filter(
-        data_tranzactie__range=[month_start, month_end]
-    ).values('id_produs').annotate(total_suma=Sum('total')).order_by('-total_suma')
 
-    # ========== AVERAGE TRANSACTION VALUE ==========
-    # Calculate average transaction value
-    total_tranzactii = total_stats.get('total_tranzactii', 0) or 1  # Avoid division by zero
-    total_suma = total_stats.get('total_suma', 0) or 0
-    
-    avg_transaction_value = total_suma / total_tranzactii if total_tranzactii > 0 else 0
-    
-    # ========== AVERAGE TICKET VALUE ==========
-    total_bilete = total_stats.get('total_bilete', 0) or 1
-    avg_ticket_value = total_suma / total_bilete if total_bilete > 0 else 0
-    
+    # ========== CONTEXT ==========
     context = {
-        # total data
-        'total_stats': total_stats,
+        # Filter params
+        'period': period,
+        'selected_pos': int(selected_pos) if selected_pos else '',
+        
+        # Stats
+        'stats': total_stats,
+        'year_stats': year_stats,
+        'month_stats': month_stats,
         'avg_transaction_value': avg_transaction_value,
         'avg_ticket_value': avg_ticket_value,
-        # machines
+        
+        # Data
+        'transactions': page_obj,
         'machines': PosMachine.objects.all().order_by('pos_id'),
-        'products': Tranzactie.objects.all(),
-        # Yearly data
+        'product': Tranzactie.objects.values('id_produs').distinct().order_by('id_produs'),
+        # Year info
         'year': current_year,
-        'year_stats': year_stats,
-        'year_pos_tickets_json': json.dumps(list(year_pos_tickets), cls=DjangoJSONEncoder),
-        'year_product_values_json': json.dumps(list(year_product_values), cls=DjangoJSONEncoder),
-
-        # Monthly data
         'month': current_month_name,
-        'month_stats': month_stats,
-        'month_pos_tickets_json': json.dumps(list(month_pos_tickets), cls=DjangoJSONEncoder),
-        'month_product_values_json': json.dumps(list(month_product_values), cls=DjangoJSONEncoder),
     }
 
     return render(request, 'sales_details.html', context)

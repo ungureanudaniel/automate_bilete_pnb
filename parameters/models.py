@@ -30,6 +30,9 @@ class Produs(models.Model):
         verbose_name = 'Produs'
         verbose_name_plural = 'Produse'
 
+    def __str__(self):
+        return self.denumire
+
 class Serie(models.Model):
     locatie_pos = models.CharField(max_length=100, default='Locatie')
     serie = models.CharField(max_length=50, default='PNBO')
